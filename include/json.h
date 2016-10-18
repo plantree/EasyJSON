@@ -3,6 +3,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <stack>
 #include <algorithm>
 #include <functional>
 #include <cstddef>
@@ -26,6 +27,7 @@ namespace JSON {
     struct JSON_status {
         int depth = 0;
         bool is_object = true;
+        bool is_realnull = false;
     };
 
     struct JSON_node {
@@ -72,7 +74,7 @@ namespace JSON {
 
     class Value {
     public:
-        explicit Value() :type(JSON_NULL), vec_x(),is_arr(false) {
+        explicit Value() :type(JSON_NULL), vec_x(),is_arr(false) ,s(),_format(""){
             vec_x.push_back(std::pair<std::pair<std::string, JSON_status>, JSON_value>());
             vec_x[0].first.second.depth = 0;
             vec_x[0].first.second.is_object = false;
@@ -81,7 +83,7 @@ namespace JSON {
 
         }
 
-        explicit Value(int i) :type(JSON_NUMBER), vec_x(),is_arr(false) {
+        explicit Value(int i) :type(JSON_NUMBER), vec_x(),is_arr(false),s() ,_format(std::to_string(i)){
             vec_x.push_back(std::pair<std::pair<std::string, JSON_status>, JSON_value>());
             vec_x[0].first.second.depth = 0;
             vec_x[0].first.second.is_object = false;
@@ -90,7 +92,7 @@ namespace JSON {
 
         }
 
-        explicit Value(double d) :type(JSON_NUMBER), vec_x(),is_arr(false) {
+        explicit Value(double d) :type(JSON_NUMBER), vec_x(),is_arr(false),s() ,_format(std::to_string(d)){
             vec_x.push_back(std::pair<std::pair<std::string, JSON_status>, JSON_value>());
             vec_x[0].first.second.depth = 0;
             vec_x[0].first.second.is_object = false;
@@ -99,19 +101,23 @@ namespace JSON {
 
         }
 
-        explicit Value(bool b) :type(), vec_x() ,is_arr(false){
+        explicit Value(bool b) :type(), vec_x() ,is_arr(false),s(),_format(){
             vec_x.push_back(std::pair<std::pair<std::string, JSON_status>, JSON_value>());
             vec_x[0].first.second.depth = 0;
             vec_x[0].first.second.is_object = false;
-            if (b)
+            if (b){
                 vec_x[0].second.type = JSON_TRUE;
-            else
+                _format = "true";
+            }
+            else{
                 vec_x[0].second.type = JSON_FALSE;
+                _format = "false";
+            }
 
 
         }
 
-        explicit Value(const std::string &str) :type(JSON_STRING), vec_x() ,is_arr(false){
+        explicit Value(const std::string &str) :type(JSON_STRING), vec_x() ,is_arr(false),s(),_format("\"" + str+"\""){
             vec_x.push_back(std::pair<std::pair<std::string, JSON_status>, JSON_value>());
             vec_x[0].first.second.depth = 0;
             vec_x[0].first.second.is_object = false;
@@ -119,15 +125,19 @@ namespace JSON {
             vec_x[0].second.type = JSON_STRING;
 
         }
-        Value(const Value& _v) :type(_v.type), vec_x(_v.vec_x),is_arr(false) {}
+        Value(const Value& _v) :type(_v.type), vec_x(_v.vec_x),is_arr(false),s() ,_format(_v._format){}
 
 
         Value& operator =(Value _rh) {
             type = _rh.type;
             vec_x = _rh.vec_x;
+            s = _rh.s;
+            _format = _rh._format;
+
             if(is_arr){
                 throw Exception("error");
             }
+
 
             return *this;
         }
@@ -166,6 +176,8 @@ namespace JSON {
 
             Value temp_v(type,vec_x);
             temp_v.set_array(true);
+            temp_v.set_format(vec_x);
+
             //huanyuan
             vec_x = tempvec_x;
             type = temp_type;
@@ -205,6 +217,8 @@ namespace JSON {
 
             Value temp_v(type,vec_x);
             temp_v.set_array(true);
+            temp_v.set_format(vec_x);
+
 
             //huanyuan
             vec_x = tempvec_x;
@@ -231,17 +245,13 @@ namespace JSON {
                 return true;
             return false;
         }
-        bool isTrue() {
-            if (type == JSON_TRUE)
+        bool isBool() {
+            if (type == JSON_TRUE || type == JSON_FALSE)
                 return true;
             return false;
         }
 
-        bool isFalse() {
-            if (type == JSON_FALSE)
-                return true;
-            return false;
-        }
+
 
         bool isNull() {
             if (type == JSON_NULL)
@@ -262,33 +272,153 @@ namespace JSON {
             return 0.0;
         }
 
-        bool toTrue() {
-            if (type == JSON_TRUE)
-                return true;
-
-            else throw Exception("Error: This is not a boolean value!");
-            return true;
-        }
-
-        bool toFalse() {
-            if (type == JSON_FALSE)
-                return false;
-            else throw Exception("Error: This is not a boolean value!");
-            return false;
-        }
 
 
-        std::string toString() {
+
+        const char * toString() {
             if (type == JSON_STRING)
-                return vec_x[0].second.s;
+                return vec_x[0].second.s.c_str();
             else throw Exception("Error: This is not a string!");
             return "";
         }
 
+        const char *format(){
 
+            return "";
+        }
+
+
+        ~Value(){}
 
     //private:
-        Value(JSONTYPE _T,const _Type &_v) :type(_T), vec_x(_v),is_arr(true) {}
+        Value(JSONTYPE _T,const _Type &_v) :type(_T), vec_x(_v),is_arr(true),s() {}
+
+        std::string getspace(int depth){
+            return std::string(depth *4,' ');
+        }
+
+        void set_format(_Type &vec){
+            std::stack<bool> obj_or_arr;
+            _format = "";
+            if(vec.size() == 2&&vec[1].second.type == JSON_NULL &&vec[0].second.type == JSON_ARRAY){
+                _format = "[]";
+                return;
+            }
+            if(vec.size() == 1){
+                if(vec[0].second.type == JSON_NULL&&vec[0].first.second.is_realnull){
+                    _format += "null";
+                }else if(vec[0].second.type == JSON_FALSE){
+                    _format += "false";
+                }else if(vec[0].second.type == JSON_TRUE){
+                    _format += "true";
+                }else if(vec[0].second.type == JSON_NUMBER){
+
+                    _format += std::to_string(vec[0].second.n);
+                }else if(vec[0].second.type == JSON_STRING){
+                    _format += "\"" +vec[0].second.s+"\"";
+                }else if(vec[0].second.type == JSON_OBJECT){
+                    _format = "{}";
+                }
+                return;
+            }
+
+
+            for(size_t i = 0;i < vec.size(); ++i){
+                if(vec[i].second.type == JSON_NULL&&vec[i].first.second.is_realnull){
+                    if(_format[_format.size() - 1] == '}'||_format[_format.size() - 1] == ']'){
+                        _format += ",";
+                    }
+                    _format += "null,";
+                }else if(vec[i].second.type == JSON_FALSE){
+                    if(_format[_format.size() - 1] == '}'||_format[_format.size() - 1] == ']'){
+                        _format += ",";
+                    }
+                    _format += "false,";
+                }else if(vec[i].second.type == JSON_TRUE){
+                    if(_format[_format.size() - 1] == '}'||_format[_format.size() - 1] == ']'){
+                        _format += ",";
+                    }
+                    _format += "true,";
+                }else if(vec[i].second.type == JSON_NUMBER){
+                        if(_format[_format.size() - 1] == '}'||_format[_format.size() - 1] == ']'){
+                            _format += ",";
+                        }
+                    _format += std::to_string(vec[i].second.n)+",";
+                }else if(vec[i].second.type == JSON_STRING){
+                    if(_format[_format.size() - 1] == '}'||_format[_format.size() - 1] == ']'){
+                        _format += ",";
+                    }
+                    _format += "\"" +vec[i].second.s +"\",";
+                }else if(vec[i].second.type == JSON_ARRAY){
+                    if(_format[_format.size() - 1] == '}'||_format[_format.size() - 1] == ']')
+                        _format += ",";
+
+                    if(i!= 0 &&vec[i].first.second.is_object){
+                        _format += "\""+vec[i].first.first+"\":";
+                    }
+
+                    _format += "[";
+                    obj_or_arr.push(false);
+
+                }else if(vec[i].second.type == JSON_OBJECT){
+                    if(_format[_format.size() - 1] == '}'||_format[_format.size() - 1] == ']')
+                        _format += ",";
+                    if(i!= 0&&vec[i].first.second.is_object){
+                        _format+= "\""+ vec[i].first.first+ +"\":";
+                    }
+                    _format += "{";
+
+                    obj_or_arr.push(true);
+                    if(i+1 != vec.size()&&vec[i].first.second.depth >= vec[i+1].first.second.depth){
+                            _format += "}";
+
+                            obj_or_arr.pop();
+
+                    }
+                    if(i+1 != vec.size()&&vec[i+1].first.second.depth > vec[i].first.second.depth){
+                        _format+= "\""+ vec[i+1].first.first+ +"\":";
+                    }
+                }
+                if(i+1 != vec.size()&&vec[i].first.second.depth > vec[i+1].first.second.depth){
+                    if(!obj_or_arr.empty()){
+                        if(obj_or_arr.top() == true){
+                            if(_format[_format.size() - 1] != ',')
+                                _format +="}";
+                            else {_format= std::string(_format.begin(),_format.end() - 1); _format +="}";}
+                        }else {
+                            if(_format[_format.size() - 1] != ',')
+                                _format +="]";
+                            else {_format= std::string(_format.begin(),_format.end() - 1); _format +="]";}
+
+                        }
+
+
+                        obj_or_arr.pop();
+                    }
+                }
+
+
+
+
+            }
+            while(!obj_or_arr.empty()){
+                if(obj_or_arr.top() == true){
+                    if(_format[_format.size() - 1] != ',')
+                        _format +="}";
+                    else {_format = std::string(_format.begin(),_format.end() - 1); _format +="}";}
+                }else{
+                    if(_format[_format.size() - 1] != ',')
+                        _format +="]";
+                    else {_format= std::string(_format.begin(),_format.end() - 1); _format +="]";}
+                }
+
+                obj_or_arr.pop();
+
+            }
+
+
+
+        }
 
         void set_vec(const std::vector<std::pair<std::pair<std::string, JSON_status>, JSON_value>> &v) {
             vec_x = v;
@@ -334,7 +464,7 @@ namespace JSON {
                     break;
                 }
             }
-            ++tempit2;
+            //++tempit2;
 
             return std::pair<int,int>(pos,pos2);
 
@@ -365,7 +495,7 @@ namespace JSON {
                     break;
                 }
             }
-            ++tempit2;
+            //++tempit2;
             return std::pair<int,int>(pos,pos2);
         }
 
@@ -381,6 +511,8 @@ namespace JSON {
         JSONTYPE type;
         std::vector<std::pair<std::pair<std::string, JSON_status>, JSON_value>> vec_x;
         bool is_arr;
+        std::string s;
+        std::string _format;
 
         friend Value _parse(const char *json);
         template<typename... _Args>
@@ -548,6 +680,7 @@ namespace JSON {
             parse_null(c);
             JSON_value jv;
             jv.type = JSON_NULL;
+            no[no.size() - 1].second.is_realnull = true;
             vec_x.push_back(std::make_pair(no[no.size() - 1], jv));
 
         }
@@ -654,6 +787,7 @@ namespace JSON {
             parse_null(c);
             JSON_value jv;
             jv.type = JSON_NULL;
+            no[no.size() - 1].second.is_realnull = true;
             vec_x.push_back(std::make_pair(no[no.size() - 1], jv));
         }
         else {
@@ -795,6 +929,7 @@ namespace JSON {
         v.set_vec(vec_x);
         v.set_type(vec_x[0].second.type);
         v.set_array(false);
+        v.set_format(vec_x);
         return v;
     }
 
@@ -899,7 +1034,15 @@ namespace JSON {
         v.set_array(false);
         v.set_type(temp1[0].second.type);
         v.set_vec(temp1);
+        v.set_format(temp1);
+    }
+
+
+    void Write(const std::string &file,int unicode){
+
 
     }
+
 }
+
 #endif
