@@ -176,7 +176,7 @@ namespace JSON {
 
             Value temp_v(type,vec_x);
             temp_v.set_array(true);
-            temp_v.set_format(vec_x);
+
 
             //huanyuan
             vec_x = tempvec_x;
@@ -217,7 +217,7 @@ namespace JSON {
 
             Value temp_v(type,vec_x);
             temp_v.set_array(true);
-            temp_v.set_format(vec_x);
+
 
 
             //huanyuan
@@ -283,8 +283,76 @@ namespace JSON {
         }
 
         const char *format(){
+            _format = "";
 
-            return "";
+
+
+            std::stack<bool> obj_or_arr;
+            if(vec_x[0].second.type == JSON_ARRAY){
+                _format += "[";
+            }else if(vec_x[0].second.type == JSON_OBJECT){
+                _format += "{";
+            }
+            for(size_t i = 1;i < vec_x.size(); ++i){
+                if(vec_x[i].first.second.depth <= vec_x[i - 1 ].first.second.depth&&vec_x[i -1].second.type == JSON_OBJECT){
+                    _format += "}";
+                    obj_or_arr.pop();
+                }
+                if(vec_x[i].first.second.depth < vec_x[i - 1 ].first.second.depth){
+                    for(int j = 0;j < vec_x[i-1].first.second.depth -vec_x[i].first.second.depth;++j){
+                        if(obj_or_arr.top()) _format += "}";
+                        else _format += "]";
+
+                        obj_or_arr.pop();
+                    }
+                }
+
+                if(vec_x[i].first.second.depth <= vec_x[i - 1 ].first.second.depth){
+                    _format += ",";
+                }
+
+
+
+                if(vec_x[i].first.second.is_object == true){
+                    _format += "\""+vec_x[i].first.first +"\":";
+                }
+
+
+                if(vec_x[i].second.type == JSON_NULL &&vec_x[i].first.second.is_realnull == true){
+                    _format += "null";
+                }else if(vec_x[i].second.type == JSON_TRUE){
+                    _format += "true";
+                }else if(vec_x[i].second.type == JSON_FALSE){
+                    _format += "false";
+                }else if(vec_x[i].second.type == JSON_NUMBER){
+                    _format += std::to_string(vec_x[i].second.n);
+                }else if(vec_x[i].second.type == JSON_STRING){
+                    _format += "\""+ vec_x[i].second.s+"\":";
+                }else if(vec_x[i].second.type == JSON_ARRAY){
+                    _format += "[";
+                    obj_or_arr.push(false);
+                }else if(vec_x[i].second.type == JSON_OBJECT){
+                    _format += "{";
+                    obj_or_arr.push(true);
+                }
+
+
+            }
+            while(!obj_or_arr.empty()){
+                if(obj_or_arr.top()) _format += "}";
+                else _format += "]";
+
+                obj_or_arr.pop();
+            }
+            if(vec_x[0].second.type == JSON_ARRAY){
+                _format += "]";
+            }if(vec_x[0].second.type == JSON_OBJECT){
+                _format += "}";
+            }
+
+            process_fp(_format);
+
+            return _format.c_str();
         }
 
 
@@ -293,132 +361,7 @@ namespace JSON {
     //private:
         Value(JSONTYPE _T,const _Type &_v) :type(_T), vec_x(_v),is_arr(true),s() {}
 
-        std::string getspace(int depth){
-            return std::string(depth *4,' ');
-        }
 
-        void set_format(_Type &vec){
-            std::stack<bool> obj_or_arr;
-            _format = "";
-            if(vec.size() == 2&&vec[1].second.type == JSON_NULL &&vec[0].second.type == JSON_ARRAY){
-                _format = "[]";
-                return;
-            }
-            if(vec.size() == 1){
-                if(vec[0].second.type == JSON_NULL&&vec[0].first.second.is_realnull){
-                    _format += "null";
-                }else if(vec[0].second.type == JSON_FALSE){
-                    _format += "false";
-                }else if(vec[0].second.type == JSON_TRUE){
-                    _format += "true";
-                }else if(vec[0].second.type == JSON_NUMBER){
-
-                    _format += std::to_string(vec[0].second.n);
-                }else if(vec[0].second.type == JSON_STRING){
-                    _format += "\"" +vec[0].second.s+"\"";
-                }else if(vec[0].second.type == JSON_OBJECT){
-                    _format = "{}";
-                }
-                return;
-            }
-
-
-            for(size_t i = 0;i < vec.size(); ++i){
-                if(vec[i].second.type == JSON_NULL&&vec[i].first.second.is_realnull){
-                    if(_format[_format.size() - 1] == '}'||_format[_format.size() - 1] == ']'){
-                        _format += ",";
-                    }
-                    _format += "null,";
-                }else if(vec[i].second.type == JSON_FALSE){
-                    if(_format[_format.size() - 1] == '}'||_format[_format.size() - 1] == ']'){
-                        _format += ",";
-                    }
-                    _format += "false,";
-                }else if(vec[i].second.type == JSON_TRUE){
-                    if(_format[_format.size() - 1] == '}'||_format[_format.size() - 1] == ']'){
-                        _format += ",";
-                    }
-                    _format += "true,";
-                }else if(vec[i].second.type == JSON_NUMBER){
-                        if(_format[_format.size() - 1] == '}'||_format[_format.size() - 1] == ']'){
-                            _format += ",";
-                        }
-                    _format += std::to_string(vec[i].second.n)+",";
-                }else if(vec[i].second.type == JSON_STRING){
-                    if(_format[_format.size() - 1] == '}'||_format[_format.size() - 1] == ']'){
-                        _format += ",";
-                    }
-                    _format += "\"" +vec[i].second.s +"\",";
-                }else if(vec[i].second.type == JSON_ARRAY){
-                    if(_format[_format.size() - 1] == '}'||_format[_format.size() - 1] == ']')
-                        _format += ",";
-
-                    if(i!= 0 &&vec[i].first.second.is_object){
-                        _format += "\""+vec[i].first.first+"\":";
-                    }
-
-                    _format += "[";
-                    obj_or_arr.push(false);
-
-                }else if(vec[i].second.type == JSON_OBJECT){
-                    if(_format[_format.size() - 1] == '}'||_format[_format.size() - 1] == ']')
-                        _format += ",";
-                    if(i!= 0&&vec[i].first.second.is_object){
-                        _format+= "\""+ vec[i].first.first+ +"\":";
-                    }
-                    _format += "{";
-
-                    obj_or_arr.push(true);
-                    if(i+1 != vec.size()&&vec[i].first.second.depth >= vec[i+1].first.second.depth){
-                            _format += "}";
-
-                            obj_or_arr.pop();
-
-                    }
-                    if(i+1 != vec.size()&&vec[i+1].first.second.depth > vec[i].first.second.depth){
-                        _format+= "\""+ vec[i+1].first.first+ +"\":";
-                    }
-                }
-                if(i+1 != vec.size()&&vec[i].first.second.depth > vec[i+1].first.second.depth){
-                    if(!obj_or_arr.empty()){
-                        if(obj_or_arr.top() == true){
-                            if(_format[_format.size() - 1] != ',')
-                                _format +="}";
-                            else {_format= std::string(_format.begin(),_format.end() - 1); _format +="}";}
-                        }else {
-                            if(_format[_format.size() - 1] != ',')
-                                _format +="]";
-                            else {_format= std::string(_format.begin(),_format.end() - 1); _format +="]";}
-
-                        }
-
-
-                        obj_or_arr.pop();
-                    }
-                }
-
-
-
-
-            }
-            while(!obj_or_arr.empty()){
-                if(obj_or_arr.top() == true){
-                    if(_format[_format.size() - 1] != ',')
-                        _format +="}";
-                    else {_format = std::string(_format.begin(),_format.end() - 1); _format +="}";}
-                }else{
-                    if(_format[_format.size() - 1] != ',')
-                        _format +="]";
-                    else {_format= std::string(_format.begin(),_format.end() - 1); _format +="]";}
-                }
-
-                obj_or_arr.pop();
-
-            }
-
-
-
-        }
 
         void set_vec(const std::vector<std::pair<std::pair<std::string, JSON_status>, JSON_value>> &v) {
             vec_x = v;
@@ -505,6 +448,76 @@ namespace JSON {
 
         _Type&get_vec(){
             return vec_x;
+        }
+
+        void padLine(int level,std::string &temp){
+            int i;
+            //if(temp != std::string(""))
+            temp+= "\n";
+            for(i=0; i < level; i++)
+                temp += "    ";
+        }
+
+        void process_fp(std::string&str) {
+
+            int level=0;
+            int last=-1;
+            int c;
+            int instr=0;
+            int inesc=0;
+            std::string temp;
+
+            for(size_t i =0;i < str.size(); ++i){
+                c = static_cast<int> (str[i]);
+                if(instr && c == '\\'){    /* escape */
+                    inesc=!inesc;
+                }else if (inesc){
+                    inesc = 0;
+                    if ('"' == c){
+                        temp += "\"";
+                        last = '1';
+                        continue;
+                    }
+                }else{
+                    if(last =='"')
+                        instr=!instr;    /* quote */
+
+                    if(!instr && last==':')
+                        temp += " ";
+
+                    if(!instr) {
+                        if (last == '{' || last == '[')
+                            padLine(++level,temp);
+                        else if (last == ',')
+                            padLine(level,temp);
+
+                        if (c == '}' || c == ']') {
+                            if (level > 0)
+                                level--;
+                            padLine(level,temp);
+                        }else if (c == '{' || c == '[') {
+                            if (last != ',' && last != '[' && last != '{')
+                                padLine(level,temp);
+                        }
+                    }
+                }
+
+
+                last=c;
+                if (instr || !(' ' == c || '\t' == c || '\r' == c || '\n' == c)){
+                    temp += static_cast<char>(c);
+                }
+
+
+            }
+            std::string::iterator it = temp.begin();
+            for(;it != temp.end();++it){
+                if(*it != '\n'&&*it != ' '){
+                    break;
+                }
+
+            }
+            str = std::string(it,temp.end());
         }
 
 
@@ -929,7 +942,7 @@ namespace JSON {
         v.set_vec(vec_x);
         v.set_type(vec_x[0].second.type);
         v.set_array(false);
-        v.set_format(vec_x);
+
         return v;
     }
 
@@ -1034,12 +1047,6 @@ namespace JSON {
         v.set_array(false);
         v.set_type(temp1[0].second.type);
         v.set_vec(temp1);
-        v.set_format(temp1);
-    }
-
-
-    void Write(const std::string &file,int unicode){
-
 
     }
 
