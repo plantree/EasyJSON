@@ -1,26 +1,43 @@
 language: cpp
 
+dist: trusty
+sudo: required
+
 compiler:
   - clang
   - gcc
+matrix:
+  include:
+  - os: linux
+    compiler: gcc
+    env: COMPILER=g++-4.9
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: g++-4.9
+    before_script:
+      - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+      - sudo apt-get update -q
+      - sudo apt-get install g++-4.9 -y
+      - sudo export CXX="g++-4.9"
 
-before_install:
-  # g++4.8.1
-  - if [ "$CXX" == "g++" ]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test; fi
+  - os: linux
+    compiler: gcc
+    env: COMPILER=g++-5
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: g++-5
 
-  # clang 3.4
-  - if [ "$CXX" == "clang++" ]; then sudo add-apt-repository -y ppa:h-rayflood/llvm; fi
-
-  - sudo apt-get update -qq
-
-install:
-  # g++4.8.1
-  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8"; fi
-
-  # clang 3.4
-  - if [ "$CXX" == "clang++" ]; then sudo apt-get install --allow-unauthenticated -qq clang-3.4; fi
-  - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.4"; fi
+  - os: linux
+    compiler: gcc
+    env: COMPILER=g++-6
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: g++-6
 
 script: 
+  - cd build
   - $CXX --version
+  - %CXX -std=c++11 test.cpp
