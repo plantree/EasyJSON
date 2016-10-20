@@ -59,6 +59,48 @@ matrix:
       - sudo apt-get install g++-6 -y
       - cd build
       - g++-6 -std=c++11 test.cpp
+      
+  - os: linux
+    compiler: clang
+    env: COMPILER=clang++-3.6
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: clang++-3.6
+    before_script:
+      - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+      - sudo apt-get update -q
+      - sudo apt-get install clang++-3.6 -y
+      - cd build
+      - clang++-3.6 -std=c++11 test.cpp
+      
+  - os: linux
+    compiler: clang
+    env: COMPILER=clang++-3.7
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: clang++-3.7
+    before_script:
+      - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+      - sudo apt-get update -q
+      - sudo apt-get install clang++-3.7 -y
+      - cd build
+      - clang++-3.7 -std=c++11 test.cpp
+      
+  - os: linux
+    compiler: clang
+    env: COMPILER=clang++-3.8
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: clang++-3.8
+    before_script:
+      - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+      - sudo apt-get update -q
+      - sudo apt-get install clang++-3.8 -y
+      - cd build
+      - clang++-3.8 -std=c++11 test.cpp
 
 script: 
   - $CXX --version
