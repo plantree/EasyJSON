@@ -21,6 +21,19 @@ matrix:
       - sudo apt-get install g++-4.9 -y
       - cd build
       - g++-4.9 -std=c++11 test.cpp
+  - os: linux
+    compiler: gcc
+    env: COMPILER=g++-5
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: g++-5
+    before_script:
+      - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+      - sudo apt-get update -q
+      - sudo apt-get install g++-5 -y
+      - cd build
+      - g++-5 -std=c++11 test.cpp
 
 script: 
   - $CXX --version
