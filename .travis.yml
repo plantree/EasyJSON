@@ -6,12 +6,29 @@ language: cpp
 matrix:
   include:
 
-  # Valgrind
+  - os: linux
+    compiler: gcc
+    env: COMPILER=g++-4.9
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: g++-4.9
 
   - os: linux
     compiler: gcc
-    env:
-      - COMPILER=g++-4.9
+    env: COMPILER=g++-5
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: g++-5
+
+  - os: linux
+    compiler: gcc
+    env: COMPILER=g++-6
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+packages: g++-6
 script:
   - cd build
   - $CXX -std=c++11 test.cpp
