@@ -295,7 +295,7 @@ namespace JSON {
                 }else if(vec_x[0].second.type == JSON_NUMBER){
                     _format += std::to_string(vec_x[0].second.n);
                 }else if(vec_x[0].second.type == JSON_STRING){
-                    _format += "\""+ vec_x[0].second.s+"\":";
+                    _format += "\""+ vec_x[0].second.s+"\"";
                 }else if(vec_x[0].second.type == JSON_OBJECT){
                     _format += "{}";
                 }
@@ -306,8 +306,6 @@ namespace JSON {
                 }else
                     return "[]";
             }
-
-
 
             std::stack<bool> obj_or_arr;
             if(vec_x[0].second.type == JSON_ARRAY){
@@ -349,7 +347,7 @@ namespace JSON {
                 }else if(vec_x[i].second.type == JSON_NUMBER){
                     _format += std::to_string(vec_x[i].second.n);
                 }else if(vec_x[i].second.type == JSON_STRING){
-                    _format += "\""+ vec_x[i].second.s+"\":";
+                    _format += "\""+ vec_x[i].second.s+"\"";
                 }else if(vec_x[i].second.type == JSON_ARRAY){
                     _format += "[";
                     obj_or_arr.push(false);
