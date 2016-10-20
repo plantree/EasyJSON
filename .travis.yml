@@ -8,7 +8,7 @@ matrix:
   include:
   - os: linux
     compiler: gcc
-    env: COMPILER=g++-4.9
+    env: COMPILER=g++-4.8
     addons:
       apt:
         sources: ['ubuntu-toolchain-r-test']
