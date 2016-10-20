@@ -117,7 +117,7 @@ namespace JSON {
 
         }
 
-        explicit Value(const std::string &str) :type(JSON_STRING), vec_x() ,is_arr(false),s(),_format("\"" + str+"\""){
+        explicit Value(const char *str) :type(JSON_STRING), vec_x() ,is_arr(false),s(),_format("\"" + std::string(str)+"\""){
             vec_x.push_back(std::pair<std::pair<std::string, JSON_status>, JSON_value>());
             vec_x[0].first.second.depth = 0;
             vec_x[0].first.second.is_object = false;
@@ -537,7 +537,7 @@ namespace JSON {
                 }
 
             }
-            str = std::string(it,temp.end());
+            str = std::string(it,temp.end()) + "\n";
         }
 
 
