@@ -65,7 +65,9 @@ matrix:
     env: COMPILER=clang++-3.6
     addons:
       apt:
-        sources: ['ubuntu-toolchain-r-test']
+        sources:
+          - ubuntu-toolchain-r-test
+          - llvm-toolchain-precise-3.6
         packages: clang-3.6
     before_script:
       - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
@@ -79,7 +81,9 @@ matrix:
     env: COMPILER=clang++-3.7
     addons:
       apt:
-        sources: ['ubuntu-toolchain-r-test']
+        sources:
+          - ubuntu-toolchain-r-test
+          - llvm-toolchain-precise-3.7
         packages: clang-3.7
     before_script:
       - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
@@ -93,7 +97,9 @@ matrix:
     env: COMPILER=clang++-3.8
     addons:
       apt:
-        sources: ['ubuntu-toolchain-r-test']
+        sources:
+          - ubuntu-toolchain-r-test
+          - llvm-toolchain-precise-3.8
         packages: clang-3.8
     before_script:
       - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
