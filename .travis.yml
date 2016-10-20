@@ -5,6 +5,17 @@ compiler:
   - clang
   - gcc
 # Build steps
+
+
+matrix:
+  include:
+
+  # Valgrind
+
+  - os: linux
+    compiler: gcc
+    env:
+      - COMPILER=g++-4.9
 script:
   - cd build
   - $CXX -std=c++11 test.cpp
