@@ -24,4 +24,4 @@ matrix:
 script: 
   - cd build
   - $CXX --version
-  - %CXX -std=c++11 test.cpp
+  - $CXX -std=c++11 test.cpp
