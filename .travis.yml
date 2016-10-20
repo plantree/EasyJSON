@@ -19,6 +19,7 @@ matrix:
       - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
       - sudo apt-get update -q
       - sudo apt-get install g++-4.9 -y
+      - cd build
       - g++-4.9 -std=c++11 test.cpp
 
 script: 
