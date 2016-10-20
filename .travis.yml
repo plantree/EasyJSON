@@ -6,6 +6,6 @@ compiler:
   - gcc
 # Build steps
 script:
-  - cd include
+  - cd pp
 
 
