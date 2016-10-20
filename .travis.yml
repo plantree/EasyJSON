@@ -28,7 +28,7 @@ matrix:
     addons:
       apt:
         sources: ['ubuntu-toolchain-r-test']
-packages: g++-6
+        packages: g++-6
 script:
   - cd build
   - $CXX -std=c++11 test.cpp
