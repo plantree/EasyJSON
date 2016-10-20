@@ -6,6 +6,6 @@ compiler:
   - gcc
 # Build steps
 script:
-  - cd pp
+  - $CXX --version
 
 
