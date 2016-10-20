@@ -285,6 +285,28 @@ namespace JSON {
         const char *format(){
             _format = "";
 
+            if(vec_x.size() == 1){
+                if(vec_x[0].second.type == JSON_NULL &&vec_x[0].first.second.is_realnull == true){
+                    _format += "null";
+                }else if(vec_x[0].second.type == JSON_TRUE){
+                    _format += "true";
+                }else if(vec_x[0].second.type == JSON_FALSE){
+                    _format += "false";
+                }else if(vec_x[0].second.type == JSON_NUMBER){
+                    _format += std::to_string(vec_x[0].second.n);
+                }else if(vec_x[0].second.type == JSON_STRING){
+                    _format += "\""+ vec_x[0].second.s+"\":";
+                }else if(vec_x[0].second.type == JSON_OBJECT){
+                    _format += "{}";
+                }
+                return _format.c_str();
+            }else if(vec_x.size() == 2&&vec_x[0].second.type == JSON_ARRAY&&vec_x[1].second.type == JSON_NULL){
+                if(vec_x[1].first.second.is_realnull){
+                    return "[null]";
+                }else
+                    return "[]";
+            }
+
 
 
             std::stack<bool> obj_or_arr;
