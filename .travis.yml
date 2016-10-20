@@ -6,6 +6,7 @@ compiler:
   - gcc
 # Build steps
 script:
-  - $CXX --version
+  - cd build
+  - $CXX test.cpp
 
 
