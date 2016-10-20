@@ -19,9 +19,8 @@ matrix:
       - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
       - sudo apt-get update -q
       - sudo apt-get install g++-4.9 -y
-      - sudo export CXX="g++-4.9"
+      - g++-4.9 -std=c++11 test.cpp
 
 script: 
   - cd build
   - $CXX --version
-  - $CXX -std=c++11 test.cpp
