@@ -9,7 +9,6 @@
 #include <cstddef>
 #ifndef JSONNUMBER_H
 #define JSONNUMBER_H
-#include <string>
 #include <cctype>
 namespace JSON {
 
