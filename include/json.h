@@ -378,7 +378,7 @@ namespace JSON {
 
         ~Value(){}
 
-    //private:
+    private:
         Value(JSONTYPE _T,const _Type &_v) :type(_T), vec_x(_v),is_arr(true),s() {}
 
 
