@@ -1,9 +1,6 @@
 #include "../include/json.h"
 #include <iostream>
 #include <cstdio>
-
-
-
 int main(){
     JSON::Value v,v2,v3;
     JSON::Value temp,temp2;
