@@ -89,7 +89,7 @@ matrix:
     before_script:
       - cd build
       - clang++-3.6 -std=c++11 test2.cpp
-      - clang++-3.6  --version
+      - /usr/bin/clang++-3.6  --version
         		
   
 script: 
