@@ -19,6 +19,7 @@ matrix:
       - sudo apt-get install g++-4.8 -y
       - cd build
       - g++-4.8 -std=c++11 test.cpp
+      - if [ "$CXX" == "g++" ]; then export CXX="g++-4.8"; fi
   - os: linux
     compiler: gcc
     env: COMPILER=g++-4.9
@@ -32,6 +33,7 @@ matrix:
       - sudo apt-get install g++-4.9 -y
       - cd build
       - g++-4.9 -std=c++11 test.cpp
+      - if [ "$CXX" == "g++" ]; then export CXX="g++-4.9"; fi
   - os: linux
     compiler: gcc
     env: COMPILER=g++-5
@@ -45,6 +47,7 @@ matrix:
       - sudo apt-get install g++-5 -y
       - cd build
       - g++-5 -std=c++11 test.cpp
+      - if [ "$CXX" == "g++" ]; then export CXX="g++-5"; fi
       
   - os: linux
     compiler: gcc
@@ -59,13 +62,8 @@ matrix:
       - sudo apt-get install g++-6 -y
       - cd build
       - g++-6 -std=c++11 test.cpp
+      - if [ "$CXX" == "g++" ]; then export CXX="g++-6"; fi
       
-  - os: linux
-    compiler: clang
-    env: COMPILER=clang++
-    before_script:
-      - cd build
-      - clang++ -std=c++11 test2.cpp
 
   - os: linux
     compiler: clang
@@ -76,9 +74,8 @@ matrix:
     env: COMPILER=clang++-3.5
     before_script:
       - cd build
-      - clang++-3.5 -std=c++11 test2.cpp
+      - clang++-3.5 -std=c++11 test.cpp
       - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.5"; fi
-      - clang++-3.5 --version
 
   - os: linux
     compiler: clang
@@ -89,10 +86,76 @@ matrix:
     env: COMPILER=clang++-3.6
     before_script:
       - cd build
-      - clang++-3.6 -std=c++11 test2.cpp
+      - clang++-3.6 -std=c++11 test.cpp
       - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.6"; fi
-      - /usr/bin/clang++-3.6  --version
+
+      
+  - os: linux
+    compiler: clang
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.7']
+        packages: ['clang-3.7']
+    env: COMPILER=clang++-3.7
+    before_script:
+      - cd build
+      - clang++-3.7 -std=c++11 test.cpp
+      - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.7"; fi
+      
+      
+  - os: linux
+    compiler: clang
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8']
+        packages: ['clang-3.8']
+    env: COMPILER=clang++-3.8
+    before_script:
+      - cd build
+      - clang++-3.8 -std=c++11 test.cpp
+      - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.8"; fi
+      
+  - os: osx
+    osx_image: beta-xcode6.1
+    before_script:
+      - cd build
+
+  - os: osx
+    osx_image: beta-xcode6.2
+    before_script:
+      - cd build
+
+  - os: osx
+    osx_image: beta-xcode6.3
+    before_script:
+      - cd build
+
+  - os: osx
+    osx_image: xcode6.4
+    before_script:
+      - cd build
+
+  - os: osx
+    osx_image: xcode7.1
+    before_script:
+      - cd build
+
+  - os: osx
+    osx_image: xcode7.2
+    before_script:
+      - cd build
+
+  - os: osx
+    osx_image: xcode7.3
+    before_script:
+      - cd build
+
+  - os: osx
+    osx_image: xcode8
+    before_script:
+      - cd build
         		
   
 script: 
   - $CXX --version
+  - $CXX -std=c++11 test.cpp
