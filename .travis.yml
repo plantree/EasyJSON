@@ -60,28 +60,31 @@ matrix:
       - cd build
       - g++-6 -std=c++11 test.cpp
       
-    - os: linux
-      compiler: clang
-      env: COMPILER=clang++
+  - os: linux
+    compiler: clang
+    env: COMPILER=clang++
 
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.5']
-          packages: ['clang-3.5']
-      env: COMPILER=clang++-3.5
-      before_script:
-        - cd build
-        - clang++ -std=c++11 test.cpp
+  - os: linux
+    compiler: clang
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.5']
+        packages: ['clang-3.5']
+    env: COMPILER=clang++-3.5
+    before_script:
+      - cd build
+      - clang++ -std=c++11 test.cpp
 
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.6']
-          packages: ['clang-3.6']
-      env: COMPILER=clang++-3.6
+  - os: linux
+    compiler: clang
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.6']
+        packages: ['clang-3.6']
+    env: COMPILER=clang++-3.6
+    before_script:
+      - cd build
+      - clang++ -std=c++11 test.cpp
         		
   
 script: 
