@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <functional>
 #include <cstddef>
+#include <cstdlib>
 #ifndef JSONNUMBER_H
 #define JSONNUMBER_H
 #include <cctype>
