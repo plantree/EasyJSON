@@ -18,9 +18,6 @@ int main(){
 	fgets(p3, 200, fp3);
 	JSON::Parse(temp, "{\"ss\":123,\"zz\":{},\"pp\":[1,2,3,4,5,{},[]]}");
 	JSON::Parse(v, p); JSON::Parse(v2, p2); JSON::Parse(v3, p3);
-	JSON::Parse(temp2, JSON::UTFstring("{\"UTF8\":1}", UTF8));
-	JSON::Parse(temp2, JSON::UTFstring("{\"UTF16\":2}", UTF16));
-	JSON::Parse(temp2, JSON::UTFstring("{\"UTF32\":2}", UTF32));
 	JSON::SetValue(temp, JSON::Value("123"), "pp", 6, 0);
 	std::cout << v.isArray() << "\n";
 	std::cout << v3.isObject() << "\n";
