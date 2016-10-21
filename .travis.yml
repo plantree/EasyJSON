@@ -76,8 +76,8 @@ matrix:
     env: COMPILER=clang++-3.5
     before_script:
       - cd build
-      - clang++ -std=c++11 test2.cpp
-      - clang++ -std=c++11 test.cpp
+      - clang++-3.5 -std=c++11 test2.cpp
+      - clang++-3.5 --version
 
   - os: linux
     compiler: clang
@@ -88,8 +88,8 @@ matrix:
     env: COMPILER=clang++-3.6
     before_script:
       - cd build
-      - clang++ -std=c++11 test2.cpp
-      - clang++ -std=c++11 test.cpp
+      - clang++-3.6 -std=c++11 test2.cpp
+      - clang++-3.6 -std=c++11 test.cpp
         		
   
 script: 
