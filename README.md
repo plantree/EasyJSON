@@ -1,7 +1,7 @@
 # EasyJSON
 [![Build Status](https://travis-ci.org/wangxiaozhi123/EasyJSON.svg?branch=master)](https://travis-ci.org/wangxiaozhi123/EasyJSON)
 
-This is a JSON Parser written in C++11. It is header-only C++ library. Just copy `include/json.h`and you can use it.
+This is a JSON Parser written in C++11. It is a header-only C++ library. Just copy `include/json.h`and you can use it.
 
 ###demo
 
