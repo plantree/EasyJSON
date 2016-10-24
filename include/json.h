@@ -455,10 +455,11 @@ char const* Exception::what() const throw()
         }
 
         double toNumber() {
+            double temp = 0.0;
             if (type == JSON_NUMBER)
-                return vec_x[0].second.n;
+                temp =  vec_x[0].second.n;
             else throw Exception("Error: This is not a number!");
-            return 0.0;
+            return temp;
         }
 
         bool toBool() {
